@@ -64,6 +64,12 @@ public class FundamentosApplication implements CommandLineRunner {
 		myBeanWithDependency.printWithDependency();
 		System.out.println(myBeanWithProperties.function());
 		System.out.println(userPojo.getEmail()+" - "+userPojo.getPassword());
-		LOGGER.error("esto es un error");
+		try {
+			//error
+			int value = 10/0;
+			LOGGER.debug("mi valor: "+value);
+		} catch (Exception e){
+		LOGGER.error("esto es un error al dividir por 0 " + e.getMessage());
+		}
 	}
 }
