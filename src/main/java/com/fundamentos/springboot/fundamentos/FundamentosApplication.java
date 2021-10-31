@@ -12,24 +12,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/*
-@SpringBootApplication
-public class FundamentosApplication  implements CommandLineRunner {
-	private ComponentDependency componentDependency;
-	public FundamentosApplication(ComponentDependency componentDependency){
-		this.componentDependency = componentDependency;
-	}
-	public static void main(String[] args){
-		SpringBootApplication.run(FundamentosApplication.class, args);
-	}
-
-	@Override
-	public void run(String... args) throws Exception {
-		componentDependency.saludar();
-	}
-}
-*/
-
 @SpringBootApplication
 public class FundamentosApplication implements CommandLineRunner {
 
@@ -59,6 +41,9 @@ public class FundamentosApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args){
+		ejemplosAnteriores();
+	}
+	private void ejemplosAnteriores(){
 		componentDependency.saludar();
 		myBean.print();
 		myBeanWithDependency.printWithDependency();
@@ -69,7 +54,7 @@ public class FundamentosApplication implements CommandLineRunner {
 			int value = 10/0;
 			LOGGER.debug("mi valor: "+value);
 		} catch (Exception e){
-		LOGGER.error("esto es un error al dividir por 0 " + e.getMessage());
+			LOGGER.error("esto es un error al dividir por 0 " + e.getMessage());
 		}
 	}
 }
