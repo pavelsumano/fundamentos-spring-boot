@@ -7,6 +7,7 @@ import com.fundamentos.springboot.fundamentos.component.ComponentDependency;
 import com.fundamentos.springboot.fundamentos.entity.User;
 import com.fundamentos.springboot.fundamentos.pojo.UserPojo;
 import com.fundamentos.springboot.fundamentos.repository.UserRepository;
+import com.fundamentos.springboot.fundamentos.service.UserService;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,16 +32,18 @@ public class FundamentosApplication implements CommandLineRunner {
 	private MyBeanWithProperties myBeanWithProperties;
 	private UserPojo userPojo;
 	private UserRepository userRepository;
+	private UserService userService;
 
 
 
-	public FundamentosApplication(@Qualifier("componentTwoImplement") ComponentDependency componentDependency, MyBean myBean, MyBeanWithDependency myBeanWithDependency, MyBeanWithProperties myBeanWithProperties, UserPojo userPojo, UserRepository userRepository){
+	public FundamentosApplication(@Qualifier("componentTwoImplement") ComponentDependency componentDependency, MyBean myBean, MyBeanWithDependency myBeanWithDependency, MyBeanWithProperties myBeanWithProperties, UserPojo userPojo, UserRepository userRepository, UserService userService ){
 		this.componentDependency = componentDependency;
 		this.myBean = myBean;
 		this.myBeanWithDependency = myBeanWithDependency;
 		this.myBeanWithProperties = myBeanWithProperties;
 		this.userPojo = userPojo;
 		this.userRepository = userRepository;
+		this.userService = userService;
 
 	}
 
@@ -53,7 +56,24 @@ public class FundamentosApplication implements CommandLineRunner {
 		//ejemplosAnteriores();
 		saveUsersInDataBase();
 		getInformationJpqlFromUser();
+		saveWithErrorTransactional();
 	}
+
+	private void saveWithErrorTransactional(){
+		User test1 = new User("test1", "test1@gmail.com", LocalDate.of(2021,12,29));
+		User test2 = new User("test2", "test2@gmail.com", LocalDate.of(2021,10,3));
+		User test3 = new User("test3", "test1@gmail.com", LocalDate.of(2021,9,9));
+		User test4 = new User("test4", "test4@gmail.com", LocalDate.of(2021,8,2));
+		List<User> users = Arrays.asList(test1,test2,test3,test4);
+		try {
+			userService.saveTransactional(users);
+		} catch (Exception e){
+			LOGGER.error("Exeption dentro del transactional");
+		}
+		userService.getAllUsers().stream().forEach(user -> LOGGER.info("Este es el usuario transaccional: "+user));
+	}
+
+
 	private void getInformationJpqlFromUser(){
 		LOGGER.info("Usuario con el metodo "+
 				userRepository.findByUserEmail("user5@gmail.com")
@@ -91,7 +111,7 @@ public class FundamentosApplication implements CommandLineRunner {
 				.stream()
 				.forEach(user -> LOGGER.info("usuarios findByEmailContainingOrderByIdDesc "+user));
 
-		LOGGER.info("Usuario desde named parameter: "+
+		LOGGER.info("Usuario desde named parameter getAllByBirthdayAndEmail: "+
 		userRepository.getAllByBirthdayAndEmail(LocalDate.of(2021,9,24), "jon3@gmail.com")
 				.orElseThrow(() -> new RuntimeException("No se encontro el usuario")));
 	}
